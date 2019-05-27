@@ -8,8 +8,8 @@ machine readable AST first, docs second.
 
 
 # SYNTAX
-Place tripple forward slashes in front of doc lines. See [this][0]
-example.
+Any file can be used as documentation. Place tripple forward slashes in front of
+lines that are to be used as documentation. See [this][0] example.
 
 ```c++
 /// <keyword> ...args
