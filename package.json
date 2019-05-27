@@ -1,0 +1,23 @@
+{
+  "name": "hyper-docs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": "bin/docs",
+  "scripts": {
+    "test": "node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datcxx/hyper-docs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/datcxx/hyper-docs/issues"
+  },
+  "homepage": "https://github.com/datcxx/hyper-docs#readme",
+  "dependencies": {
+    "marked": "^0.6.2"
+  }
+}
