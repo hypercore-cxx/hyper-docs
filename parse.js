@@ -21,7 +21,7 @@ module.exports = source => {
 
   const output = {
     namespace: [],
-    classes: {},
+    types: {},
     functions: [],
   }
 
@@ -53,9 +53,10 @@ module.exports = source => {
         break
       }
 
+      case 'struct':
       case 'class': {
         lastClass = words.shift()
-        last = output.classes[lastClass] = []
+        last = output.types[lastClass] = []
         break
       }
 
@@ -63,7 +64,7 @@ module.exports = source => {
         last = {
           operator: words.join(' ')
         }
-        output.classes[lastClass].push(last)
+        output.types[lastClass].push(last)
         break
       }
 
@@ -97,7 +98,7 @@ module.exports = source => {
           property: words.join(' ')
         }
 
-        output.classes[lastClass].push(last)
+        output.types[lastClass].push(last)
         break
       }
 
@@ -133,7 +134,7 @@ module.exports = source => {
           hasConstructor = true
         }
 
-        output.classes[lastClass].push(lastMethod)
+        output.types[lastClass].push(lastMethod)
 
         break
       }

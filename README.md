@@ -21,17 +21,20 @@ example.
 #### namespace `name`
 Each header defines only one namespace.
 
+#### function `name(...args)`
+Each function is associated with the last namespace.
+
 #### class `name`
 Each class is associated with the last namespace.
+
+#### struct `name`
+Each struct is associated with the last namespace.
 
 #### method `name(...args)`
 Each method is associated with the last class.
 
 #### overload `name(...args)`
 An overload is a type of method.
-
-#### function `name(...args)`
-A function is a 
 
 #### return `type`
 Each return is associated with the last function, method or overload.

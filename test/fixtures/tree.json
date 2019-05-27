@@ -3,7 +3,7 @@
     "Hyper",
     "Util"
   ],
-  "classes": {
+  "types": {
     "Buffer<T>": [
       {
         "property": "vector<T> value",
