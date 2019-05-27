@@ -45,6 +45,14 @@ Each param is associaated with the last function or method.
 #### comment `text...`
 Each comment is associated with the last keyword.
 
+# CLI
+Hyper-docs cli will output an AST. It will also accept an AST as input
+and compile to either html (`--html`) or markdown (`--md`) pending on the
+specified flag.
+
+```bash
+hyper-docs /path/to/projects | ./bin/docs --html
+```
 
 # PARSER
 Outputs an AST. See [this][1] example.

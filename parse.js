@@ -1,6 +1,3 @@
-//
-// Parse each line 
-//
 module.exports = source => {
   const DOC_RE = /\/\/\/(.*)[\n|\r]/g
 
@@ -25,15 +22,11 @@ module.exports = source => {
     functions: [],
   }
 
-  let lastClass = null
+  let lastType = null
   let lastMethod = null
   let hasConstructor = false
   let last = null
 
-  //
-  // Parses all lines of the file, the rule for docs is
-  // last-one-in-wins like css.
-  //
   const parseLine = line => {
     const words = line.split(' ')
     const keyword = words.shift()
@@ -53,18 +46,27 @@ module.exports = source => {
         break
       }
 
-      case 'struct':
-      case 'class': {
-        lastClass = words.shift()
-        last = output.types[lastClass] = []
+      case 'function': {
+        lastType = words[0].match(/\w+/)[0]
+        last = lastMethod = output.types[lastType] = {}
         break
       }
 
+      case 'struct':
+      case 'class': {
+        lastType = words.shift()
+        last = output.types[lastType] = { members: [] }
+        break
+      }
+
+      case 'property':
       case 'operator': {
         last = {
-          operator: words.join(' ')
+          type: keyword,
+          name: words.join(' ')
         }
-        output.types[lastClass].push(last)
+
+        output.types[lastType].members.push(last)
         break
       }
 
@@ -90,15 +92,6 @@ module.exports = source => {
         }
 
         last.params[identifier].comment += words.join(' ')
-        break
-      }
-
-      case 'property': {
-        last = {
-          property: words.join(' ')
-        }
-
-        output.types[lastClass].push(last)
         break
       }
 
@@ -134,7 +127,7 @@ module.exports = source => {
           hasConstructor = true
         }
 
-        output.types[lastClass].push(lastMethod)
+        output.types[lastType].members.push(lastMethod)
 
         break
       }

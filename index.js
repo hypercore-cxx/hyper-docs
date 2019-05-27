@@ -1,7 +1,9 @@
 const fs = require('fs')
+const os = require('os')
 const path = require('path')
 
 const parse = require('./parse')
+const compile = require('./compile')
 
 //
 // Find all header files except in ./deps or hidden dirs
@@ -16,9 +18,13 @@ const read = d => {
     const p = paths[i]
     const base = path.basename(p)
 
-    if (base[0] === '.' || (base === 'deps')) {
-      continue
-    }
+    const dontParse = (
+      (base[0] === '.') ||
+      (base === 'deps') ||
+      (base === 'hyper-docs')
+    )
+
+    if (dontParse) continue
 
     const stat = fs.statSync(p)
 
@@ -52,13 +58,31 @@ const parseUrl = s => {
   let url = s.split('//')[1]
   if (!url) url = s.split('@')[1]
 
-  return url.replace(':', '/').replace('.git', '')
+  return 'https://' + url.replace(':', '/').replace('.git', '')
 }
 
 //
 // Read all files from a path and parse their headers for docs
 //
 function main (argv) {
+  if (argv[0] === '--md' || argv[0] === '--html') {
+    let buffers = fs
+      .readFileSync(0, 'utf8')
+      .split(os.EOL)
+      .filter(Boolean)
+
+    try {
+      buffers = buffers.map(JSON.parse)
+    } catch (err) {
+      console.error(err.message)
+      process.exit(1)
+    }
+
+    const type = argv[0].slice(2)
+    compile(buffers, type)
+    return
+  }
+
   const files = read(argv[0])
 
   for (const file of files) {
@@ -73,7 +97,7 @@ function main (argv) {
     const output = parse(s)
 
     output.repo = parseUrl(pkg.repository.url)
-    console.log(JSON.stringify(output, 2, 2))
+    process.stdout.write(JSON.stringify(output) + '\n')
   }
 }
 
