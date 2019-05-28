@@ -73,7 +73,7 @@ module.exports = source => {
 
         last = lastMethod = output.types[lastType] = {
           raw: words.join(' '),
-          params: parseParams(line) 
+          params: parseParams(line)
         }
 
         break
