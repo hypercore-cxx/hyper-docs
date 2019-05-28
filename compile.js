@@ -86,11 +86,11 @@ const templateParams = type => {
 
   return [
     ``,
-    `|Parameter|Description|`,
-    `|:---|:---|`,
+    `|Parameter|Default|Description|`,
+    `|:---|:---|:---|`,
     ...Object.keys(type.params).map(key => {
       const param = type.params[key]
-      return `|${key}|${param.comment}|`
+      return `|${key}|${param.default || ''}|${param.comment || ''}|`
     })
   ].join('\n')
 }
@@ -123,11 +123,39 @@ const templateMethods = members => {
   return [...header, ...rows].join('\n')
 }
 
+//
+// Constructors
+//
+const templateConstructors = members => {
+  const ctors = members.filter(m => m.type === 'constructor')
+
+  if (!ctors.length) {
+    return '' // there are no operators
+  }
+
+  const header = [`### CONSTRUCTORS\n`]
+
+  const rows = ctors.map(ctor => {
+    return [
+      `${ctor.comment || ''}`,
+      `\`\`\``,
+      ctor.raw,
+      `\`\`\``,
+      templateParams(ctor),
+      ``
+    ].join('\n')
+  })
+
+  return [...header, ...rows].join('\n')
+}
+
 const templateClassOrStruct = (key, type) => `
 ## ${escapeString(key)}
-${type.comment}
+${type.comment || 'Undocumented. Do not use.'}
 
 ${templateOperators(type.members)}
+
+${templateConstructors(type.members)}
 
 ${templateMethods(type.members)}
 
@@ -136,7 +164,7 @@ ${templateProperties(type.members)}
 
 const templateFunction = (key, type) => `
 ## ${escapeString(key)}
-${type.comment}
+${type.comment || 'Undocumented. Do not use.'}
 
 \`\`\`
 ${type.raw}

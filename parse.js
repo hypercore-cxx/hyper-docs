@@ -31,12 +31,22 @@ module.exports = source => {
 
     line = line.replace(/\((.*)\)/, (_, sig) => {
       sig.split(',').filter(Boolean).forEach(param => {
+        let defaultValue
+
+        param = param.replace(/\s*=\s*(.*)$/, (_, val) => {
+          defaultValue = val
+          return ''
+        })
+
         const name = param.match(/\w+$/)
+
         if (!name) {
           console.error('missing param name', line)
         }
+
         params[name] = {
           const: !!param.match(/\s+const|const\s+/),
+          default: defaultValue,
           reference: !!param.match(/&/),
           pointer: !!param.match(/\*/),
           comment: ''
