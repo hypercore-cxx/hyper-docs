@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/datcxx/hyper-docs#readme",
   "dependencies": {
-    "highlight.js": "^9.15.6",
     "marked": "^0.6.2"
   }
 }

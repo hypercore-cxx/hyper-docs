@@ -65,7 +65,7 @@ const parseUrl = s => {
 // Read all files from a path and parse their headers for docs
 //
 function main (argv) {
-  if (argv[0] === '--md' || argv[0] === '--html') {
+  if (!argv.length) {
     let buffers = fs
       .readFileSync(0, 'utf8')
       .split(os.EOL)
@@ -78,8 +78,7 @@ function main (argv) {
       process.exit(1)
     }
 
-    const type = argv[0].slice(2)
-    compile(buffers, type)
+    compile(buffers)
     return
   }
 

@@ -18,14 +18,35 @@ module.exports = source => {
 
   const output = {
     namespace: [],
-    types: {},
-    functions: [],
+    types: {}
   }
 
   let lastType = null
   let lastMethod = null
   let hasConstructor = false
   let last = null
+
+  const parseParams = line => {
+    const params = {}
+
+    line = line.replace(/\((.*)\)/, (_, sig) => {
+      sig.split(',').filter(Boolean).forEach(param => {
+        const name = param.match(/\w+$/)
+        if (!name) {
+          console.error('missing param name', line)
+        }
+        params[name] = {
+          const: !!param.match(/\s+const|const\s+/),
+          reference: !!param.match(/&/),
+          pointer: !!param.match(/\*/),
+          comment: ''
+        }
+      })
+      return ''
+    })
+
+    return params
+  }
 
   const parseLine = line => {
     const words = line.split(' ')
@@ -41,6 +62,7 @@ module.exports = source => {
         if (!last.comment) {
           last.comment = ''
         }
+
         last.comment += ' ' + words.join(' ')
         last.comment = last.comment.trim()
         break
@@ -48,7 +70,12 @@ module.exports = source => {
 
       case 'function': {
         lastType = words[0].match(/\w+/)[0]
-        last = lastMethod = output.types[lastType] = {}
+
+        last = lastMethod = output.types[lastType] = {
+          raw: words.join(' '),
+          params: parseParams(line) 
+        }
+
         break
       }
 
@@ -59,7 +86,17 @@ module.exports = source => {
         break
       }
 
-      case 'property':
+      case 'property': {
+        last = {
+          TYPE: words,
+          type: keyword,
+          name: words.pop()
+        }
+
+        output.types[lastType].members.push(last)
+        break
+      }
+
       case 'operator': {
         last = {
           type: keyword,
@@ -74,7 +111,7 @@ module.exports = source => {
         const type = words[0]
 
         last = {
-          type,
+          TYPE: type,
           reference: type.includes('&'),
           pointer: type.includes('*')
         }
@@ -98,25 +135,12 @@ module.exports = source => {
       case 'overload':
       case 'constructor':
       case 'method': {
-        let params = {}
-
-        line = line.replace(/\((.*)\)/, (_, sig) => {
-          sig.split(',').filter(Boolean).forEach(param => {
-            params[param.match(/\w+$/)] = {
-              const: !!param.match(/\s+const|const\s+/),
-              reference: !!param.match(/&/),
-              pointer: !!param.match(/\*/),
-              comment: ''
-            }
-          })
-          return ''
-        })
-
         last = lastMethod = {
-          name: line.split(' ').pop(),
-          type: 'method',
+          name: /\w+/.exec(words[0])[0],
+          raw: words.join(' '),
+          type: keyword,
           overload: keyword === 'overload',
-          params
+          params: parseParams(line)
         }
 
         if (keyword === 'constructor' && hasConstructor) {
