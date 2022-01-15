@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/datcxx/hyper-docs#readme",
   "dependencies": {
-    "marked": "^0.6.2"
+    "marked": "^4.0.10"
   },
   "devDependencies": {
     "standard": "^12.0.1"
